@@ -1,0 +1,56 @@
+#! /usr/local/bin/python3
+import os
+import re
+import sys
+
+
+def print_output(output):
+    largest_left = len(output[0][0])
+    for i in output:
+        if len(i[0]) > largest_left:
+            largest_left = len(i[0])
+
+    # do not pad too much if left-side is too wide
+    if largest_left > 180:
+        largest_left = 180
+
+    for i in output:
+        if len(i) == 2:
+            print('\033[92m{0} -> \033[1m{1}\033[0m'.format(i[0].ljust(largest_left), i[1]))
+        else:
+            print('\033[31m{0}\033[0m'.format(i[0].ljust(largest_left)))
+
+
+def rename_files(match_pattern, replace_pattern, dry_run):
+    output = []
+    for root, _, files in os.walk('.'):
+        for filename in files:
+            path = os.path.join(root, filename)
+
+            if re.match(match_pattern, filename):
+                new_name = re.sub(match_pattern, replace_pattern, filename)
+                new_path = os.path.join(root, new_name)
+
+                output.append((path, new_path))
+
+                if not dry_run:
+                    os.rename(path, new_path)
+            else:
+                output.append((path,))
+
+    print_output(output)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print('No arguments provided')
+        exit(1)
+
+    match_pattern = sys.argv[1]
+    replace_pattern = sys.argv[2]
+    dry_run = False
+
+    if len(sys.argv) == 4 and sys.argv[3] == '-d':
+        dry_run = True
+
+    rename_files(match_pattern, replace_pattern, dry_run)
