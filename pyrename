@@ -23,6 +23,7 @@ def print_output(output):
 
 def rename_files(match_pattern, replace_pattern, dry_run):
     output = []
+    count_match, count_rename = 0, 0
     for root, _, files in os.walk('.'):
         for filename in files:
             path = os.path.join(root, filename)
@@ -32,13 +33,16 @@ def rename_files(match_pattern, replace_pattern, dry_run):
                 new_path = os.path.join(root, new_name)
 
                 output.append((path, new_path))
+                count_match += 1
 
                 if not dry_run:
                     os.rename(path, new_path)
+                    count_rename += 1
             else:
                 output.append((path,))
 
     print_output(output)
+    print('{0} files matched, {1} renamed'.format(count_match, count_rename))
 
 
 if __name__ == "__main__":
@@ -51,6 +55,7 @@ if __name__ == "__main__":
     dry_run = False
 
     if len(sys.argv) == 4 and sys.argv[3] == '-d':
+        print('Dry-run: No files will be renamed')
         dry_run = True
 
     rename_files(match_pattern, replace_pattern, dry_run)

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyrename",
-    version="0.1.0",
+    version="0.1.1",
     author="Guilherme Borges",
     author_email="guilherme@guilhermeborges.net",
     description="Very simple file renamer in Python",
